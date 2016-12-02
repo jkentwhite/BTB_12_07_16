@@ -87,7 +87,7 @@ if(!rfidOneTriggered && !rfidTwoTriggered){
         //get depth info from kinect
         int[] depth = kinect.getRawDepth();
   
-        for(int x = 30; x < kinect.width-30; x++){
+        for(int x = 10; x < kinect.width-10; x++){
           for(int y = 0; y < kinect.height; y++) {
             int offset = x + y * img.width;
             int d = depth[offset];
@@ -898,7 +898,8 @@ if(gateState == 14){
     readLaser12 = "ON";
 }
 
-
+    // if the RFID tasks have not been completed
+    // read through the active lasers to determine if a player is tripping a laser
     if(gateState != 15){
     for(int i = 0; i < activeReceptors[gateState].length; i++){
       laserStatus = arduino.analogRead(activeReceptors[gateState][i]);
@@ -935,6 +936,7 @@ if(gateState == 14){
         oneHitCounter = 0;
       }
       
+      // if a player trips a laser, then set gateState to 14 (which is all lasers on) for a short timer duration
       if(hitLaser){
         gateState = 14;
         gateTimer++;
@@ -946,11 +948,13 @@ if(gateState == 14){
     }
    }
 
+//console logging where players are being registered in realtion to the Y axis
 println("row 1: " + rowOne);
 println("row 2: " + rowTwo);
 println("row 3: " + rowThree);
 println("row 4: " + rowFour);
 
+//debugging on screen to determine if lasers are on or off
 textSize(32);
 fill(0,255,0);
 text("laser 1: " + readLaser1, width/2, height/13);
