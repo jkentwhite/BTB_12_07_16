@@ -66,18 +66,18 @@ int minTreshold = 940;
 int maxThreshold =    950;
 
 // variable for laser configuration
-int laser1 = 3;
-int laser2 = 0;
-int laser3 = 0;
-int laser4 = 0;
-int laser5 = 0;
-int laser6 = 0;
-int laser7 = 0;
-int laser8 = 0;
-int laser9 = 0;
-int laser10 = 0;
-int laser11 = 0;
-int laser12 = 0;
+int laser1 = 0;
+int laser2 = 1;
+int laser3 = 2;
+int laser4 = 3;
+int laser5 = 4;
+int laser6 = 5;
+int laser7 = 6;
+int laser8 = 7;
+int laser9 = 8;
+int laser10 = 9;
+int laser11 = 10;
+int laser12 = 11;
 
 // laserConfigOne is hooked up to PIN 3 on the arduino board
 //int laserConfigOne = 3; 
