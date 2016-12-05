@@ -16,6 +16,7 @@
  
  
  I tried to fix all problems that were obvious in floorgrid including the timer and the obstacle being on the same page and the pattern stalling at a certain point.
+ The console readout during any level of floor grid should be telling us what number pattern we are on. if it still is not working, we can use the info as a clue as to why not.
  Floor grid is fairly automated and will move from one level to the next through four levels and then end with an intro screen to gas attack then turn to black.
  At anytime during floorgrid on any level, 
  PRESS Q to move to the next level.
@@ -72,7 +73,7 @@ boolean allChallengesCompleteScreen;
 
 //create variables for kinect depth threshold
 int minTreshold = 940;
-int maxThreshold =    950;
+int maxThreshold = 950;
 
 // variable for laser configuration
 int laser1 = 15;
