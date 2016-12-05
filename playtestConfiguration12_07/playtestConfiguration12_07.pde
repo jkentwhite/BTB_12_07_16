@@ -1,16 +1,25 @@
 /* NOTES FOR RUNNING THE SKETCH:
-Upon starting the sketch, a blank screen will be displayed and when everything is running, 'ready' will appear in the console log.
-PRESS SPACEBAR to move to the laser gate puzzle.
-
-Once the laser gates are up and running, 
-PRESS 1 to register that the first task has been completed simulating RFID #1 complete. 
-PRESS 2 to turn the lasers off simulating RFID #2 complete.
-PRESS 9 to move to floor grid.
-
-Floor grid is fairly automated and will move from one level to the next through four levels and then end with an intro screen to gas attack then turn to black.
-At anytime during floorgrid on any level, 
-PRESS Q to move to the next level.
-*/
+ Upon starting the sketch, a blank screen will be displayed and when everything is running, 'ready' will appear in the console log.
+ PRESS SPACEBAR to move to the laser gate puzzle.
+ 
+ Once the laser gates are up and running, 
+ The default state will be gateState = 0;
+ PRESS 1-0 digits to change to gateState(s) 1-10 and PRESS Y,U,I,O,P to move through 11-15
+ Y = 11
+ U = 12
+ I = 13
+ O = 14
+ P = 15
+ I tried the plus and minus key to move up and down but the keyPresses were counting multiple and causing the gateState to be out of bounds for the sensor array
+ The console log will tell you which gateState we are in so it should be pretty easy to move back and forth by touching the appropriate key
+ PRESS Z to move to floor grid.
+ 
+ 
+ I tried to fix all problems that were obvious in floorgrid including the timer and the obstacle being on the same page and the pattern stalling at a certain point.
+ Floor grid is fairly automated and will move from one level to the next through four levels and then end with an intro screen to gas attack then turn to black.
+ At anytime during floorgrid on any level, 
+ PRESS Q to move to the next level.
+ */
 
 
 //import libraries for serial reading/writing and arduino
@@ -66,8 +75,8 @@ int minTreshold = 940;
 int maxThreshold =    950;
 
 // variable for laser configuration
-int laser1 = 0;
-int laser2 = 1;
+int laser1 = 15;
+int laser2 = 14;
 int laser3 = 2;
 int laser4 = 3;
 int laser5 = 4;
@@ -122,184 +131,184 @@ int gridY = 192;
 
 //create gridsection array for 640x480 res based on gridX = 160, gridY = 120
 int [] [] gridSectionsSmall = {
-    {0,0},
-    {160, 0},
-    {320, 0},
-    {480, 0},
-    {0,120},
-    {160, 120},
-    {320, 120},
-    {480, 120},
-    {0,240},
-    {160, 240},
-    {320, 240},
-    {480, 240},
-    {0,360},
-    {160, 360},
-    {320, 360},
-    {480, 360}   
-  };
- 
- //create gridsection array for 1280x800 res based on gridX = 320, gridY = 200
- int [] [] gridSectionsLarge = {
-    {0,0},
-    {320, 0},
-    {640, 0},
-    {960, 0},
-    {0,200},
-    {320, 200},
-    {640, 200},
-    {960, 200},
-    {0,400},
-    {320, 400},
-    {640, 400},
-    {960, 400},
-    {0,600},
-    {320, 600},
-    {640, 600},
-    {960, 600}   
-  };
-  
- //create gridsection array for 1024x768 res based on gridX = 256, gridY = 192
-  int [] [] gridSections = {
-    {0,0},
-    {256, 0},
-    {512, 0},
-    {768, 0},
-    {0,192},
-    {256, 192},
-    {512, 192},
-    {768, 192},
-    {0,384},
-    {256, 384},
-    {512, 384},
-    {768, 384},
-    {0,576},
-    {256, 576},
-    {512, 576},
-    {768, 576}   
-  };
-  
-  
+  {0, 0}, 
+  {160, 0}, 
+  {320, 0}, 
+  {480, 0}, 
+  {0, 120}, 
+  {160, 120}, 
+  {320, 120}, 
+  {480, 120}, 
+  {0, 240}, 
+  {160, 240}, 
+  {320, 240}, 
+  {480, 240}, 
+  {0, 360}, 
+  {160, 360}, 
+  {320, 360}, 
+  {480, 360}   
+};
+
+//create gridsection array for 1280x800 res based on gridX = 320, gridY = 200
+int [] [] gridSectionsLarge = {
+  {0, 0}, 
+  {320, 0}, 
+  {640, 0}, 
+  {960, 0}, 
+  {0, 200}, 
+  {320, 200}, 
+  {640, 200}, 
+  {960, 200}, 
+  {0, 400}, 
+  {320, 400}, 
+  {640, 400}, 
+  {960, 400}, 
+  {0, 600}, 
+  {320, 600}, 
+  {640, 600}, 
+  {960, 600}   
+};
+
+//create gridsection array for 1024x768 res based on gridX = 256, gridY = 192
+int [] [] gridSections = {
+  {0, 0}, 
+  {256, 0}, 
+  {512, 0}, 
+  {768, 0}, 
+  {0, 192}, 
+  {256, 192}, 
+  {512, 192}, 
+  {768, 192}, 
+  {0, 384}, 
+  {256, 384}, 
+  {512, 384}, 
+  {768, 384}, 
+  {0, 576}, 
+  {256, 576}, 
+  {512, 576}, 
+  {768, 576}   
+};
+
+
 //create arrays for patterns on floorgrid  where each number in the array is a rectangle in the 4x4 grid starting with 0 and ending with 15
 int [] [] patternRects = {
 
-  {0,3,12,15},
-  {1,2,13,14},
-  {5,6,9,10},
-  {12,13,14,15},
-  {5,7,8,10},
-  {3,4,11,12},
-  {0,7,8,15},
-  {4,6,9,11},
-  {0,1,2,3},
-  {4,7,8,11},
-  {3,6,9,12},
-  {0,1,10,11},
-  {2,5,10,12},
-  {7,8,13,15},
-  {0,1,4,5},
-  {3,7,9,14},
-  {1,6,11,12},
-  {3,4,8,15},
-  {2,10,12,13},
-  {1,4,7,14},
-  {2,3,8,9},
-  {1,6,14,15},
-  {4,5,7,13},
-  {0,8,10,11},
-  {4,5,6,7},
-  {1,3,13,15},
-  {0,4,8,12},
-  {1,7,10,13},
-  {6,10,11,12},
-  {2,4,8,14},
-  {1,7,9,12},
-  {2,8,11,13},
-  {0,1,6,8},
-  {2,4,9,13},
-  {0,3,9,15},
-  {0,1,6,8},
-  {2,4,9,13},
-  {0,7,11,14},
-  {3,5,6,8},
-  {1,9,12,15},
-  {0,3,4,10},
-  {5,7,8,13},
-  {0,6,10,15},
-  {4,9,12,14},
-  {0,2,5,11},
-  {1,3,13,14},
-  {4,9,11,15},
-  {0,1,8,10},
-  {3,11,12,14},
-  {4,9,10,15}
-  
+  {0, 3, 12, 15}, 
+  {1, 2, 13, 14}, 
+  {5, 6, 9, 10}, 
+  {12, 13, 14, 15}, 
+  {5, 7, 8, 10}, 
+  {3, 4, 11, 12}, 
+  {0, 7, 8, 15}, 
+  {4, 6, 9, 11}, 
+  {0, 1, 2, 3}, 
+  {4, 7, 8, 11}, 
+  {3, 6, 9, 12}, 
+  {0, 1, 10, 11}, 
+  {2, 5, 10, 12}, 
+  {7, 8, 13, 15}, 
+  {0, 1, 4, 5}, 
+  {3, 7, 9, 14}, 
+  {1, 6, 11, 12}, 
+  {3, 4, 8, 15}, 
+  {2, 10, 12, 13}, 
+  {1, 4, 7, 14}, 
+  {2, 3, 8, 9}, 
+  {1, 6, 14, 15}, 
+  {4, 5, 7, 13}, 
+  {0, 8, 10, 11}, 
+  {4, 5, 6, 7}, 
+  {1, 3, 13, 15}, 
+  {0, 4, 8, 12}, 
+  {1, 7, 10, 13}, 
+  {6, 10, 11, 12}, 
+  {2, 4, 8, 14}, 
+  {1, 7, 9, 12}, 
+  {2, 8, 11, 13}, 
+  {0, 1, 6, 8}, 
+  {2, 4, 9, 13}, 
+  {0, 3, 9, 15}, 
+  {0, 1, 6, 8}, 
+  {2, 4, 9, 13}, 
+  {0, 7, 11, 14}, 
+  {3, 5, 6, 8}, 
+  {1, 9, 12, 15}, 
+  {0, 3, 4, 10}, 
+  {5, 7, 8, 13}, 
+  {0, 6, 10, 15}, 
+  {4, 9, 12, 14}, 
+  {0, 2, 5, 11}, 
+  {1, 3, 13, 14}, 
+  {4, 9, 11, 15}, 
+  {0, 1, 8, 10}, 
+  {3, 11, 12, 14}, 
+  {4, 9, 10, 15}
+
 };
 
 //alternate aray of patterns for floorgrid where each number in the array is a rectangle in the 4x4 grid starting with 0 and ending with 15
 int [] [] patternRectsB = {
 
-  {4,5,6,7},
-  {1,3,13,15},
-  {0,4,8,12},
-  {1,7,10,13},
-  {6,10,11,12},
-  {2,4,8,14},
-  {1,7,9,12},
-  {2,8,11,13},
-  {0,1,6,8},
-  {2,4,9,13},
-  {0,3,9,15},
-  {0,1,6,8},
-  {2,4,9,13},
-  {0,7,11,14},
-  {3,5,6,8},
-  {1,9,12,15},
-  {0,3,4,10},
-  {5,7,8,13},
-  {0,6,10,15},
-  {4,9,12,14},
-  {0,2,5,11},
-  {1,3,13,14},
-  {4,9,11,15},
-  {0,1,8,10},
-  {3,11,12,14},
-  {4,9,10,15},
-  {0,3,12,15},
-  {1,2,13,14},
-  {5,6,9,10},
-  {12,13,14,15},
-  {5,7,8,10},
-  {3,4,11,12},
-  {0,7,8,15},
-  {4,6,9,11},
-  {0,1,2,3},
-  {4,7,8,11},
-  {3,6,9,12},
-  {0,1,10,11},
-  {2,5,10,12},
-  {7,8,13,15},
-  {0,1,4,5},
-  {3,7,9,14},
-  {1,6,11,12},
-  {3,4,8,15},
-  {2,10,12,13},
-  {1,4,7,14},
-  {2,3,8,9},
-  {1,6,14,15},
-  {4,5,7,13},
-  {0,8,10,11}
-  
+  {4, 5, 6, 7}, 
+  {1, 3, 13, 15}, 
+  {0, 4, 8, 12}, 
+  {1, 7, 10, 13}, 
+  {6, 10, 11, 12}, 
+  {2, 4, 8, 14}, 
+  {1, 7, 9, 12}, 
+  {2, 8, 11, 13}, 
+  {0, 1, 6, 8}, 
+  {2, 4, 9, 13}, 
+  {0, 3, 9, 15}, 
+  {0, 1, 6, 8}, 
+  {2, 4, 9, 13}, 
+  {0, 7, 11, 14}, 
+  {3, 5, 6, 8}, 
+  {1, 9, 12, 15}, 
+  {0, 3, 4, 10}, 
+  {5, 7, 8, 13}, 
+  {0, 6, 10, 15}, 
+  {4, 9, 12, 14}, 
+  {0, 2, 5, 11}, 
+  {1, 3, 13, 14}, 
+  {4, 9, 11, 15}, 
+  {0, 1, 8, 10}, 
+  {3, 11, 12, 14}, 
+  {4, 9, 10, 15}, 
+  {0, 3, 12, 15}, 
+  {1, 2, 13, 14}, 
+  {5, 6, 9, 10}, 
+  {12, 13, 14, 15}, 
+  {5, 7, 8, 10}, 
+  {3, 4, 11, 12}, 
+  {0, 7, 8, 15}, 
+  {4, 6, 9, 11}, 
+  {0, 1, 2, 3}, 
+  {4, 7, 8, 11}, 
+  {3, 6, 9, 12}, 
+  {0, 1, 10, 11}, 
+  {2, 5, 10, 12}, 
+  {7, 8, 13, 15}, 
+  {0, 1, 4, 5}, 
+  {3, 7, 9, 14}, 
+  {1, 6, 11, 12}, 
+  {3, 4, 8, 15}, 
+  {2, 10, 12, 13}, 
+  {1, 4, 7, 14}, 
+  {2, 3, 8, 9}, 
+  {1, 6, 14, 15}, 
+  {4, 5, 7, 13}, 
+  {0, 8, 10, 11}
+
 };
 
 void setup()
 {
-  //size(1024, 768);
-  fullScreen();
+  size(1024, 768);
+  //fullScreen();
   //size(displayWidth, displayHeight);
   background(0);
-  
+
   //set booleans for starting the experience making the intro TRUE and all other states FALSE
   blackScreenIntro = true;
   laserPuzzle = false;
@@ -319,7 +328,7 @@ void setup()
   floorGridComplete = false;
   gasAttackScreen = false;
   allChallengesCompleteScreen = false;
-  
+
   //initialize arduino and configure port
   arduino = new Arduino(this, Arduino.list()[4], 57600);
   //designate the laserConfigOne as an OUTPUT for turning the lasers on and off
@@ -339,7 +348,7 @@ void setup()
 
   //initialize the minim files
   minim = new Minim(this);
-  
+
   //designate the files for the minim and soundfile files
   chime = minim.loadSample("chime.wav", 2048);
   buzzer = minim.loadSample("WrongOption2.wav", 2048);
@@ -349,15 +358,14 @@ void setup()
   laserActivate = new SoundFile(this, "layzuhhr.wav");
   laserMusic = new SoundFile(this, "LasersOnMixv1.wav");
   floorGridMusic =new SoundFile(this, "umami.mp3");
-  
+
   //intitalize the Kinect depth and IR data
   kinect = new Kinect(this);
   kinect.initDepth();
   kinect.enableIR(true);  
   kinect.initVideo();
-  
-  img = createImage(kinect.width, kinect.height, RGB);
 
+  img = createImage(kinect.width, kinect.height, RGB);
 }
 
 //this is the main draw function for the experience
@@ -365,35 +373,35 @@ void setup()
 void draw()
 {
   background(0);
-  if(blackScreenIntro){
-    blackScreenIntro(); 
-  } else if(laserPuzzle){
+  if (blackScreenIntro) {
+    blackScreenIntro();
+  } else if (laserPuzzle) {
     laserPuzzle();
-  } else if(laserDeactivatedScreen){
+  } else if (laserDeactivatedScreen) {
     laserDeactivatedScreen();
-  } else if(floorGridInstScreen){
-    floorGridInstScreen(); 
-  } else if(floorGridPracticeScreen){
+  } else if (floorGridInstScreen) {
+    floorGridInstScreen();
+  } else if (floorGridPracticeScreen) {
     floorGridPracticeScreen();
-  } else if(floorGridStartScreen){
+  } else if (floorGridStartScreen) {
     floorGridStartScreen();
-  } else if(floorGridLevelOne){
+  } else if (floorGridLevelOne) {
     floorGridLevelOne();
-  } else if(floorGridSuccessLvlOneScreen){
+  } else if (floorGridSuccessLvlOneScreen) {
     floorGridSuccessLvlOneScreen();
-  } else if(floorGridLevelTwo){
+  } else if (floorGridLevelTwo) {
     floorGridLevelTwo();
-  } else if(floorGridSuccessLvlTwoScreen){
+  } else if (floorGridSuccessLvlTwoScreen) {
     floorGridSuccessLvlTwoScreen();
-  } else if(floorGridLevelThree){
+  } else if (floorGridLevelThree) {
     floorGridLevelThree();
-  } else if(floorGridSuccessLvlThreeScreen){
+  } else if (floorGridSuccessLvlThreeScreen) {
     floorGridSuccessLvlThreeScreen();
-  } else if(floorGridLevelFour){
+  } else if (floorGridLevelFour) {
     floorGridLevelFour();
-  } else if(floorGridSuccessLvlFourScreen){
+  } else if (floorGridSuccessLvlFourScreen) {
     floorGridSuccessLvlFourScreen();
-  } else if(floorGridComplete){
+  } else if (floorGridComplete) {
     floorGridCompleteScreen();
   }
 }

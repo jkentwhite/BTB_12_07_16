@@ -1,182 +1,179 @@
-void floorGridPracticeScreen(){
+void floorGridPracticeScreen() {
 
-        background(0);
-        
-
-        //load images from camera
-        img.loadPixels();
-        imgVideo = kinect.getVideoImage();
-  
-        //clear blobs arraylist
-        blobs.clear();
-  
-        //get depth info from kinect
-        int[] depth = kinect.getRawDepth();
-  
-        for(int x = 10; x < kinect.width-10; x++){
-          for(int y = 0; y < kinect.height; y++) {
-            int offset = x + y * img.width;
-            int d = depth[offset];
-        
-          //set the depth for the sensor to pick up players
-          if(d > minTreshold && d < maxThreshold){
-            //see if the pixels in the range of the sensor are already part of a blob
-            boolean found = false;
-            for (Blob b : blobs) {
-              //if the pixel is close enough it will become part of a previously defined blob
-              if (b.isNear(x, y)) {
-                b.add(x, y);
-                found = true;
-                break;
-              }
-            }
-            //if there are no blobs or the pixel is far enough away, start a new blob
-            if (!found) {
-              Blob b = new Blob(x, y);
-              blobs.add(b);
-            }
-          }
-         }
-       }
-    
-      //update the image from camera
-      img.updatePixels();
-      imageMode(CENTER);
-      //image(imgVideo,width/2,height/2, displayWidth, displayHeight);
-      tint(255,128);
-      image(img,width/2,height/2, displayWidth, displayHeight);
-  
-      //draw the grid
-      for(int i = 0; i < 16; i++){
-        rectMode(CORNER);
-        noFill();
-        stroke(255,105,180);
-        rect(gridSections[i][0], gridSections[i][1], gridX, gridY);
-      }
-  
-    
-     
-      
-      //set the pattern for the intro
-      patternNumber = 0;
-      
-      //build the pattern for intro (should be four corners but can make it whatever we want)
-       for(int i = 0;  i < patternRects[patternNumber].length; i++){
-       
-         fill(200);
-         int rectX = gridSections[patternRects[patternNumber][i]][0];
-         int rectY = gridSections[patternRects[patternNumber][i]][1];
-         rectMode(CORNER);
-         rect(rectX, rectY, gridX, gridY);
-      
-     } 
-      
-      //draw the blobs if they are bigger than 500
-      for (Blob b : blobs) {
-        if (b.size() > 500) {
-          b.show();
-        } 
-      }
-     
- 
-
-      //for each blob that exists, let's check it against the grid for the intro    
-      for (Blob b : blobs) {
-       
-        //use the arrays to set the designation for the pattern to be registered
-       int rectOneX = gridSections[patternRects[patternNumber][0]][0];
-       int rectOneY = gridSections[patternRects[patternNumber][0]][1];
-       int rectTwoX = gridSections[patternRects[patternNumber][1]][0];
-       int rectTwoY = gridSections[patternRects[patternNumber][1]][1];
-       int rectThreeX = gridSections[patternRects[patternNumber][2]][0];
-       int rectThreeY = gridSections[patternRects[patternNumber][2]][1];
-       int rectFourX = gridSections[patternRects[patternNumber][3]][0];
-       int rectFourY = gridSections[patternRects[patternNumber][3]][1];       
-       
-       //check if each of the blobs are in the designated rectangle and count to ten before registering TRUE
-       if(b.centerOfBlobX > rectOneX && b.centerOfBlobX < (rectOneX +gridX) && b.centerOfBlobY > rectOneY && b.centerOfBlobY < (rectOneY + gridY)) {
-           rectMode(CORNER);  
-           fill(54, 243, 179);
-           rect(rectOneX, rectOneY, gridX, gridY);
-           spaceCounterOne++;
-           if(spaceCounterOne >= 10){
-             rectOneGood = true;
-           }
-       } 
-
-       
-        if(b.centerOfBlobX > rectTwoX && b.centerOfBlobX < (rectTwoX +gridX) && b.centerOfBlobY > rectTwoY && b.centerOfBlobY < (rectTwoY + gridY)) {
-           rectMode(CORNER);  
-           fill(54, 243, 179);
-           rect(rectTwoX, rectTwoY, gridX, gridY);
-           spaceCounterTwo++;
-           if(spaceCounterTwo >= 10){
-             rectTwoGood = true;
-           }
-       } 
+  //clear the background
+  background(0);
 
 
-        if(b.centerOfBlobX > rectThreeX && b.centerOfBlobX < (rectThreeX +gridX) && b.centerOfBlobY > rectThreeY && b.centerOfBlobY < (rectThreeY + gridY)) {
-           rectMode(CORNER);  
-           fill(54, 243, 179);
-           rect(rectThreeX, rectThreeY, gridX, gridY);
-           spaceCounterThree++;
-           if(spaceCounterThree >= 10){
-             rectThreeGood = true;
-           }
-       } 
- 
+  //load images from camera
+  img.loadPixels();
+  imgVideo = kinect.getVideoImage();
 
-        if(b.centerOfBlobX > rectFourX && b.centerOfBlobX < (rectFourX +gridX) && b.centerOfBlobY > rectFourY && b.centerOfBlobY < (rectFourY + gridY)) {
-           rectMode(CORNER);  
-           fill(54, 243, 179);
-           rect(rectFourX, rectFourY, gridX, gridY);
-           spaceCounterFour++;
-           if(spaceCounterFour >= 10){
-             rectFourGood = true;
-           }
-       } 
- 
-     }
-     
-      //draw the blobs if they are bigger than 500
-      for (Blob b : blobs) {
-        if (b.size() > 500) {
-          b.show();
-        } 
-      }
-     
-     //if all four players are in place for ten seconds in the designated pattern then trigger to move out of the intro and into level one
-     if(rectOneGood && rectTwoGood && rectThreeGood && rectFourGood){
-          
-          chime.trigger();
-          delay(200);
+  //clear blobs arraylist
+  blobs.clear();
 
-          patternCounter++;
-          rectOneGood = false;
-          rectTwoGood = false;
-          rectThreeGood = false;
-          rectFourGood = false;
-          
-          spaceCounterOne = 0;
-          spaceCounterTwo = 0;
-          spaceCounterThree = 0;
-          spaceCounterFour = 0;
-          
-         floorGridPracticeScreen = false;
-         floorGridStartScreen = true;
+  //get depth info from kinect
+  int[] depth = kinect.getRawDepth();
 
-         
-         }
-         
-        textSize(32);
-        fill(255);
-        text("MOVE YOUR CIRCLE INTO THE DESIGNATED SPACES\nTO BEGIN FLOOR GRID CHALLENGE", width/2, height/2);
-        
-        if(keyPressed){
-          if(key == 'q'){
-            floorGridPracticeScreen = false;
-            floorGridStartScreen = true;
+  for (int x = 10; x < kinect.width-10; x++) {
+    for (int y = 0; y < kinect.height; y++) {
+      int offset = x + y * img.width;
+      int d = depth[offset];
+
+      //set the depth for the sensor to pick up players
+      if (d > minTreshold && d < maxThreshold) {
+        //see if the pixels in the range of the sensor are already part of a blob
+        boolean found = false;
+        for (Blob b : blobs) {
+          //if the pixel is close enough it will become part of a previously defined blob
+          if (b.isNear(x, y)) {
+            b.add(x, y);
+            found = true;
+            break;
           }
         }
+        //if there are no blobs or the pixel is far enough away, start a new blob
+        if (!found) {
+          Blob b = new Blob(x, y);
+          blobs.add(b);
+        }
+      }
+    }
+  }
+
+  //update the image from camera
+  img.updatePixels();
+  imageMode(CENTER);
+  //image(imgVideo,width/2,height/2, displayWidth, displayHeight);
+  tint(255, 128);
+  image(img, width/2, height/2, displayWidth, displayHeight);
+
+  //draw the grid
+  for (int i = 0; i < 16; i++) {
+    rectMode(CORNER);
+    noFill();
+    stroke(255, 105, 180);
+    rect(gridSections[i][0], gridSections[i][1], gridX, gridY);
+  }
+
+
+
+
+  //set the pattern for the intro
+  patternNumber = 0;
+
+  //build the pattern for intro (should be four corners but can make it whatever we want)
+  for (int i = 0; i < patternRects[patternNumber].length; i++) {
+
+    fill(200);
+    int rectX = gridSections[patternRects[patternNumber][i]][0];
+    int rectY = gridSections[patternRects[patternNumber][i]][1];
+    rectMode(CORNER);
+    rect(rectX, rectY, gridX, gridY);
+  } 
+
+  //draw the blobs if they are bigger than 500
+  for (Blob b : blobs) {
+    if (b.size() > 500) {
+      b.show();
+    }
+  }
+
+
+
+  //for each blob that exists, let's check it against the grid for the intro    
+  for (Blob b : blobs) {
+
+    //use the arrays to set the designation for the pattern to be registered
+    int rectOneX = gridSections[patternRects[patternNumber][0]][0];
+    int rectOneY = gridSections[patternRects[patternNumber][0]][1];
+    int rectTwoX = gridSections[patternRects[patternNumber][1]][0];
+    int rectTwoY = gridSections[patternRects[patternNumber][1]][1];
+    int rectThreeX = gridSections[patternRects[patternNumber][2]][0];
+    int rectThreeY = gridSections[patternRects[patternNumber][2]][1];
+    int rectFourX = gridSections[patternRects[patternNumber][3]][0];
+    int rectFourY = gridSections[patternRects[patternNumber][3]][1];       
+
+    //check if each of the blobs are in the designated rectangle and count to ten before registering TRUE
+    if (b.centerOfBlobX > rectOneX && b.centerOfBlobX < (rectOneX +gridX) && b.centerOfBlobY > rectOneY && b.centerOfBlobY < (rectOneY + gridY)) {
+      rectMode(CORNER);  
+      fill(54, 243, 179);
+      rect(rectOneX, rectOneY, gridX, gridY);
+      spaceCounterOne++;
+      if (spaceCounterOne >= 10) {
+        rectOneGood = true;
+      }
+    } 
+
+
+    if (b.centerOfBlobX > rectTwoX && b.centerOfBlobX < (rectTwoX +gridX) && b.centerOfBlobY > rectTwoY && b.centerOfBlobY < (rectTwoY + gridY)) {
+      rectMode(CORNER);  
+      fill(54, 243, 179);
+      rect(rectTwoX, rectTwoY, gridX, gridY);
+      spaceCounterTwo++;
+      if (spaceCounterTwo >= 10) {
+        rectTwoGood = true;
+      }
+    } 
+
+
+    if (b.centerOfBlobX > rectThreeX && b.centerOfBlobX < (rectThreeX +gridX) && b.centerOfBlobY > rectThreeY && b.centerOfBlobY < (rectThreeY + gridY)) {
+      rectMode(CORNER);  
+      fill(54, 243, 179);
+      rect(rectThreeX, rectThreeY, gridX, gridY);
+      spaceCounterThree++;
+      if (spaceCounterThree >= 10) {
+        rectThreeGood = true;
+      }
+    } 
+
+
+    if (b.centerOfBlobX > rectFourX && b.centerOfBlobX < (rectFourX +gridX) && b.centerOfBlobY > rectFourY && b.centerOfBlobY < (rectFourY + gridY)) {
+      rectMode(CORNER);  
+      fill(54, 243, 179);
+      rect(rectFourX, rectFourY, gridX, gridY);
+      spaceCounterFour++;
+      if (spaceCounterFour >= 10) {
+        rectFourGood = true;
+      }
+    }
+  }
+
+  //draw the blobs if they are bigger than 500
+  for (Blob b : blobs) {
+    if (b.size() > 500) {
+      b.show();
+    }
+  }
+
+  //if all four players are in place for ten seconds in the designated pattern then trigger to move out of the intro and into level one
+  if (rectOneGood && rectTwoGood && rectThreeGood && rectFourGood) {
+
+    chime.trigger();
+    delay(200);
+
+    patternCounter++;
+    rectOneGood = false;
+    rectTwoGood = false;
+    rectThreeGood = false;
+    rectFourGood = false;
+
+    spaceCounterOne = 0;
+    spaceCounterTwo = 0;
+    spaceCounterThree = 0;
+    spaceCounterFour = 0;
+
+    floorGridPracticeScreen = false;
+    floorGridStartScreen = true;
+  }
+
+  textSize(32);
+  fill(255);
+  text("MOVE YOUR CIRCLE INTO THE DESIGNATED SPACES\nTO BEGIN FLOOR GRID CHALLENGE", width/2, height/2);
+
+  if (keyPressed) {
+    if (key == 'q') {
+      floorGridPracticeScreen = false;
+      floorGridStartScreen = true;
+    }
+  }
 }
