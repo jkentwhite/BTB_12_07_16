@@ -237,4 +237,5 @@ void floorGridLevelOne() {
       numberCorrect = 0;
     }
   }
+  println(patternNumber);
 }

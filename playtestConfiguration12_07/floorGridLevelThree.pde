@@ -193,8 +193,9 @@ void floorGridLevelThree() {
     numberCorrect = 0;
   }
   if (levelCountdownLevelThree < 40) {
-    textSize(64);
-    fill(255);
+    textAlign(CENTER);
+    textSize(80);
+    fill(255,0,0);
     text(levelCountdownLevelThree/10 + 1, width/2, height/2);
   }  
 
@@ -212,4 +213,5 @@ void floorGridLevelThree() {
       numberCorrect = 0;
     }
   }
+  println(patternNumber);
 }

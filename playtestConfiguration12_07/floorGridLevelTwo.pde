@@ -6,7 +6,7 @@ int collisionTimer = 0, collisionDistance = 50, collisionRadius = 10;
 
 void floorGridLevelTwo() {
 
-  println(objectX + ", " + objectY);
+  //println(objectX + ", " + objectY);
 
   redBurst = loadImage("redBurst.png");
   //load images from camera
@@ -65,6 +65,7 @@ void floorGridLevelTwo() {
     if (collisionTimer >= 30) {
       collisionBurst = false;
       collisionTimer = 0;
+      
     }
   }
 
@@ -101,7 +102,7 @@ void floorGridLevelTwo() {
       if (collisionBurst) {
         textSize(32);
         fill(255, 0, 0);
-        text("AVOID THE RED BURST!\nEACH TIME IT HITS YOU,\nYOUR COUNT RETURNS TO ZERO", width/2, height/3);
+        text("AVOID THE RED BURST!\nEACH TIME IT HITS YOU,\nYOU LOSE ONE POINT", width/2, height/3);
       } else {
         b.show();
       }
@@ -173,7 +174,7 @@ void floorGridLevelTwo() {
       if (collisionBurst) {
         textSize(32);
         fill(255, 0, 0);
-        text("AVOID THE RED BURST!\nEACH TIME IT HITS YOU,\nYOUR COUNT RETURNS TO ZERO", width/2, height/3);
+        text("AVOID THE RED BURST!\nEACH TIME IT HITS YOU,\nYOU LOSE ONE POINT", width/2, height/3);
       } else {
         b.show();
       }
@@ -230,7 +231,7 @@ void floorGridLevelTwo() {
   }
   if (levelCountdownLevelTwo < 40) {
     textSize(64);
-    fill(255);
+    fill(255,0,0);
     text(levelCountdownLevelTwo/10 + 1, width/2, height/2);
   }  
 
@@ -268,10 +269,15 @@ void floorGridLevelTwo() {
       background(0);
       collisionBurst = true;
       buzzer.trigger();
-      numberCorrect = 0;
+      numberCorrect--;
       patternCounter++;
     }
   }
+  
+  if(numberCorrect < 0){
+    numberCorrect = 0;
+  } 
+  
   textSize(64);
   fill(255);
   text("NUMBER CORRECT: " + numberCorrect, width/2, height - 100);
@@ -285,4 +291,6 @@ void floorGridLevelTwo() {
       numberCorrect = 0;
     }
   }
+  
+  println("pattern number: " + patternNumber);
 }
