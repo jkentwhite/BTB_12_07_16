@@ -95,15 +95,20 @@ void floorGridLevelThree() {
     int rectFourX = gridSections[patternRects[patternNumber][3]][0];
     int rectFourY = gridSections[patternRects[patternNumber][3]][1];       
 
+    //check if each of the blobs are in the designated rectangle and count to ten before registering TRUE
     if (b.centerOfBlobX > rectOneX && b.centerOfBlobX < (rectOneX +gridX) && b.centerOfBlobY > rectOneY && b.centerOfBlobY < (rectOneY + gridY)) {
       rectMode(CORNER);  
       fill(54, 243, 179);
       rect(rectOneX, rectOneY, gridX, gridY);
       spaceCounterOne++;
-      if (spaceCounterOne >= 10) {
-        rectOneGood = true;
-      }
+      
     } 
+    if (spaceCounterOne >= 10) {
+        rectOneGood = true;
+        rectMode(CORNER);  
+        fill(54, 243, 179);
+        rect(rectOneX, rectOneY, gridX, gridY);
+      }
 
 
     if (b.centerOfBlobX > rectTwoX && b.centerOfBlobX < (rectTwoX +gridX) && b.centerOfBlobY > rectTwoY && b.centerOfBlobY < (rectTwoY + gridY)) {
@@ -111,10 +116,14 @@ void floorGridLevelThree() {
       fill(54, 243, 179);
       rect(rectTwoX, rectTwoY, gridX, gridY);
       spaceCounterTwo++;
-      if (spaceCounterTwo >= 10) {
-        rectTwoGood = true;
-      }
+      
     } 
+    if (spaceCounterTwo >= 10) {
+        rectTwoGood = true;
+        rectMode(CORNER);  
+        fill(54, 243, 179);
+        rect(rectTwoX, rectTwoY, gridX, gridY);
+      }
 
 
     if (b.centerOfBlobX > rectThreeX && b.centerOfBlobX < (rectThreeX +gridX) && b.centerOfBlobY > rectThreeY && b.centerOfBlobY < (rectThreeY + gridY)) {
@@ -122,10 +131,14 @@ void floorGridLevelThree() {
       fill(54, 243, 179);
       rect(rectThreeX, rectThreeY, gridX, gridY);
       spaceCounterThree++;
-      if (spaceCounterThree >= 10) {
-        rectThreeGood = true;
-      }
+      
     } 
+    if (spaceCounterThree >= 10) {
+        rectThreeGood = true;
+        rectMode(CORNER);  
+        fill(54, 243, 179);
+        rect(rectThreeX, rectThreeY, gridX, gridY);
+      }
 
 
     if (b.centerOfBlobX > rectFourX && b.centerOfBlobX < (rectFourX +gridX) && b.centerOfBlobY > rectFourY && b.centerOfBlobY < (rectFourY + gridY)) {
@@ -133,11 +146,16 @@ void floorGridLevelThree() {
       fill(54, 243, 179);
       rect(rectFourX, rectFourY, gridX, gridY);
       spaceCounterFour++;
-      if (spaceCounterFour >= 10) {
-        rectFourGood = true;
-      }
+      
     }
+    if (spaceCounterFour >= 10) {
+        rectFourGood = true;
+        rectMode(CORNER);  
+        fill(54, 243, 179);
+        rect(rectFourX, rectFourY, gridX, gridY);
+      }
   }
+  
   //draw the blobs if they are bigger than 500
   for (Blob b : blobs) {
     if (b.size() > 500) {
@@ -211,6 +229,16 @@ void floorGridLevelThree() {
       floorGridStartScreen = true;
       countdownFive = 50;
       numberCorrect = 0;
+      
+      rectOneGood = false;
+      rectTwoGood = false;
+      rectThreeGood = false;
+      rectFourGood = false;
+
+      spaceCounterOne = 0;
+      spaceCounterTwo = 0;
+      spaceCounterThree = 0;
+      spaceCounterFour = 0;
     }
   }
   println(patternNumber);
